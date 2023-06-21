@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    command:
+    - /bin/sh
+    - -c
+    - |
+      wait-for-it --service db:3306 --timeout=60
+      alembic upgrade head
+      pytest
+    environment:
+      DB_HOST               : db
+      DB_NAME               : mysql
+      DB_USER               : mysql
+      DB_PASS               : mysql
+      DB_URI                : mysql+aiomysql://mysql:mysql@db:3306/mysql
+
+  db:
+    environment:
+      MYSQL_ROOT_PASSWORD   : mysql
+      MYSQL_DATABASE        : mysql
+      MYSQL_USER            : mysql
+      MYSQL_PASSWORD        : mysql
+    volumes:
+    - ./testdb:/var/lib/mysql
