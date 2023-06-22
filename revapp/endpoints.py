@@ -34,21 +34,25 @@ async def read_reviews(request: Request, session: AsyncSession = Depends(get_asy
         headers={'Authorization': bearer_token}
     ).json()
 
-    for review in reviews:
-        user_info = get_user_info(review.user_id)
-        updated_review = {
-            'id': review.id,
-            'user_id': review.user_id,
-            'user': get_user_info(review.user_id),
-            'reviewer_id': review.reviewer_id,
-            'reviewer': get_user_info(review.reviewer_id),
-            'rating': review.rating,
-            'review': review.review
-        }
+    try:
+        for review in reviews:
+            user_info = get_user_info(review.user_id)
+            updated_review = {
+                'id': review.id,
+                'user_id': review.user_id,
+                'user': get_user_info(review.user_id),
+                'reviewer_id': review.reviewer_id,
+                'reviewer': get_user_info(review.reviewer_id),
+                'rating': review.rating,
+                'review': review.review
+            }
 
-        updated_reviews.append(updated_review)
+            updated_reviews.append(updated_review)
+    
+    except Exception as e:
+        print(e)
+        return {'status': 'error', 'message': 'Error getting user info: ' + str(e)}
 
-    #return reviews
     return updated_reviews
 
 @app.post("/api/reviews", response_model=Review)
